@@ -1,0 +1,79 @@
+﻿@model Company
+
+<form method="post" autocomplete="off" asp-action="Upsert">
+    <input hidden asp-for="Id" />
+
+    <div class="border p-3 pe-0 mt-4 row">
+        <div class="row pb-2">
+            <h2 class="text-primary">@(Model.Id == 0 ? "Create" : "Edit") Company</h2>
+            <hr/>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="row">
+                    <div class="mb-3">
+                        <label asp-for="Name"></label>
+                        <input asp-for="Name" class="form-control" type="text" maxlength="50"/>
+                        <span asp-validation-for="Name" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="PhoneNumber"></label>
+                        <input asp-for="PhoneNumber" maxlength="11" class="form-control input-phone" />
+                        <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="StreetAddress"></label>
+                        <input asp-for="StreetAddress" class="form-control" type="text" maxlength="100" />
+                        <span asp-validation-for="StreetAddress" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="City"></label>
+                        <input asp-for="City" class="form-control" type="text" maxlength="50" />
+                        <span asp-validation-for="City" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="State"></label>
+                        <input asp-for="State" class="form-control" type="text" maxlength="50" />
+                        <span asp-validation-for="State" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="PostalCode"></label>
+                        <input asp-for="PostalCode" maxlength="5" class="form-control input-zip" type="text" />
+                        <span asp-validation-for="PostalCode" class="text-danger small"></span>
+                    </div>
+                    <div class="text-end mt-3 d-flex gap-1 d-sm-block">
+                        @if (Model.Id == 0)
+                        {
+                            <button type="submit" class="btn btn-primary">Create</button>
+                        }
+                        else
+                        {
+                            <button type="submit" class="btn btn-primary">Update</button>
+                        }
+
+                        <a asp-controller="Company" asp-action="Index" class="btn btn-secondary">
+                            Back to List
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+
+    <script>
+        $(function () {
+            AplicarFormatosValidacion();
+        });
+
+        function AplicarFormatosValidacion() {
+            Format_PhoneNumber("input-phone");
+            Format_ZIP("input-zip"); 
+        }
+    </script>
+}

@@ -1,0 +1,42 @@
+html {
+    font-size: 14px;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    margin-bottom: 60px;
+    background-color: lightgrey;
+}
+
+.book-image {
+    width: 100%
+}
+
+
+@media all and (max-width: 1399px) {
+    .img-sx-home {
+        max-width: 222px;
+    }
+}
+
+@media all and (max-width: 575px) {
+    .img-sx-home {
+        display: flex;
+        justify-content: center;
+    }
+}
+
+
+
+
+

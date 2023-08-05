@@ -1,0 +1,119 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using BulkyBook.DataAccess.Repository.IRepository
+@using BulkyBook.Utility
+@using System.Security.Claims
+
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+@inject IUnitOfWork uow
+
+@{
+    int productCount = 0;
+
+    if (SignInManager.IsSignedIn(User))
+    {
+        var claimsIdentity = (ClaimsIdentity)User.Identity!;
+        var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+        var applicationUserId = claim!.Value;
+        var shoppingCart = uow.ShoppingCart.GetAllForUserId(applicationUserId).ToList();
+        productCount = shoppingCart.Count;
+    }   
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Book e-Store</title>
+    <link rel="stylesheet" href="~/css/bootstrapTheme.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/BulkyBookWeb.styles.css" asp-append-version="true" />
+    @*Para usar toastr*@
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+    @*Para usar iconos de bootstrap*@
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    @*Para usar Data Tables*@
+    <link rel="stylesheet" href="//cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container-fluid">
+                <span class="navbar-brand fs-3">
+                    <i>Bookstore</i>
+                </span>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarColor02">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="Customer" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="Admin" asp-controller="Order" asp-action="Index">Manage Order</a>
+                        </li>
+                        @if (SignInManager.IsSignedIn(User) && User.IsInRole(SD.Role_Admin))
+                        {
+                            <li class="nav-item dropdown">
+                                <span class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Content Management</span>
+                                <div class="dropdown-menu bg-dark">
+                                    <a class="nav-link" asp-area="Admin" asp-controller="Category" asp-action="Index">Category</a>
+                                    <a class="nav-link" asp-area="Admin" asp-controller="CoverType" asp-action="Index">Cover Type</a>
+                                    <a class="nav-link" asp-area="Admin" asp-controller="Product" asp-action="Index">Product</a>
+                                    <div class="dropdown-divider bg-secondary border-secondary"></div>
+                                    <a class="nav-link" asp-area="Admin" asp-controller="Company" asp-action="Index">Company</a>
+                                    <div class="dropdown-divider bg-secondary border-secondary"></div>
+                                    <a class="nav-link" asp-area="Identity" asp-page="/Account/Register">Create User</a>
+                                </div>
+                            </li>
+                        } 
+                    </ul>
+
+                    <partial name="_LoginPartial"/>
+
+                    @if (SignInManager.IsSignedIn(User)) 
+                    {
+                        <ul class="navbar-nav">
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="Customer" asp-controller="Cart" asp-action="Index">
+                                    <i class="bi bi-cart text-white fs-4"></i>
+                                    <sup style="margin-left:-9px; padding: 2px 4px" class="text-white small bg-danger badge rounded-pill">
+                                        @((productCount != 0) ? $"{productCount.ToString()}" : productCount.ToString())
+                                    </sup>
+                                </a>
+                            </li>
+                        </ul>
+                    }
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3 pt-3">
+            <partial name="_Notification" />
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted border-secondary">
+        <div class="container text-dark">
+            &copy; 2023 - Bookstore
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+    <script src="~/lib/cleave/cleave.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @*Para usar SweetAlert*@
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    @*Para usar Data Tables*@
+    <script src="//cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    @*Para usar el toastr al momento de eliminar*@
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    @*Para usar tiny MCE (Editor de texto). La URL contiene mi API Key*@
+    <script src="https://cdn.tiny.cloud/1/x1d2lio7arr6278d2phijguhnadc6zqmoru88u86sivsn8zn/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
